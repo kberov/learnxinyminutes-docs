@@ -13,8 +13,8 @@ lang: bg-bg
 Perl 6 e изключително мощен език за програмиране с широка област на приложение,
 създаден за следващите поне сто години.
 
-Главният компилатор на Perl 6 compiler се нарича [Rakudo](http://rakudo.org) и
-работи на Виртуалната машина на Java (JVM) [ MoarVM](http://moarvm.com).
+Главният компилатор на Perl 6 се нарича [Rakudo](http://rakudo.org) и
+работи на Виртуалната машина на Java (JVM) и на [MoarVM](http://moarvm.com).
 
 Meta-note : the triple pound signs are here to denote headlines,
 double paragraphs, and single notes.
@@ -25,121 +25,124 @@ double paragraphs, and single notes.
 # Едноредовите коментари започват със знака диез.
 
 #`(
-  Многоредовите коментари започват са знаците #` и двойка каквато и да е двойка
+  Многоредовите коментари започват със знаците #` и каквато и да е двойка
   знаци за ограждане.
   (), [], {}, 「」 и т.н. все вършат работа.
 )
 
 ### Променливи
 
-# В Perl 6, лексикалните променливи се обявяват чрез изплзване на ключовата дума `my`
+# В Perl 6 лексикалните променливи се обявяват чрез ключовата дума `my`
 my $variable;
 # Perl 6 има 4 вида променливи:
 
-## * Сцалари. Те представляват единична стойност. Те започват с `$`
+## * Скалари. Те представляват единична стойност. Те започват с `$`
 
-my $str = 'String';
+my $текст = 'Низ';
 # двойните кавички позволяват интерполация (която ще видим малко по-долу)
-my $str2 = "String";
+my $str2 = "Низ";
 
-# variable names can contain but not end with simple quotes and dashes,
-#  and can contain (and end with) underscores :
-# my $weird'variable-name_ = 5; # works !
+# Имената на променлвите могат да съдържат, но не и да завършват с кавички и
+# тирета, и могат да съдържат, и да завършват с подчертавки.
+Всички букви в Уникод-таблицата са позволени:
+my $странно'име-на-променлива_ = 5; # работи!
 
-my $bool = True; # `True` and `False` are Perl 6's boolean
-my $inverse = !$bool; # You can invert a bool with the prefix `!` operator
-my $forced-bool = so $str; # And you can use the prefix `so` operator
-                           # which turns its operand into a Bool
+my $bool = True; # `True` и `False` са булевите стойности в Perl 6
+my $inverse = !$bool; # Можете да обръщате булева стойност с предпоставения оператор `!`
+my $forced-bool = so $str; # Също може да ползвате предпоставения оператор `so`
+                           # за да превърнете операндтата му в булева стойност
 
-## * Lists. They represent multiple values. Their name start with `@`.
+## * Списъци. Те представляват множество стойности. Имената им започват с `@`.
 
 my @array = 'a', 'b', 'c';
-# equivalent to :
-my @letters = <a b c>; # array of words, delimited by space.
-                     # Similar to perl5's qw, or Ruby's %w.
+# е същото като :
+my @букви = <a b c>; # списък от думи, разделени с празни пространства.
+                     # Подобно на qw в perl5, или %w в Ruby.
 my @array = 1, 2, 3;
 
-say @array[2]; # Array indices start at 0 -- This is the third element
+say @array[2]; # Индексите в списъците започват от 0 -- Това е третия елемент.
 
-say "Interpolate an array using [] : @array[]";
-#=> Interpolate an array using [] : 1 2 3
+say "Вмъкване на списък в низ чрез [] : @array[]";
+#=> Вмъкване на списък в низ чрез [] : 1 2 3
 
-@array[0] = -1; # Assign a new value to an array index
-@array[0, 1] = 5, 6; # Assign multiple values
+@array[0] = -1; # Присвояване на стойност на индекс в списък
+@array[0, 1] = 5, 6; # Присвояване на множество стойности
 
 my @keys = 0, 2;
-@array[@keys] = @letters; # Assign using an array
+@array[@keys] = @letters; # Присвояване чрез използване на друг списък
 say @array; #=> a 6 b
 
-## * Hashes, or key-value Pairs.
-# Hashes are actually arrays of Pairs
-# (you can construct a Pair object using the syntax `Key => Value`),
-#  except they get "flattened" (hash context), removing duplicated keys.
+## * Хешове, или двойки ключ-стойност.
+# Хешовете всъщност са списъци, състоящи се от двойки 
+# (обект Двойка се създава като напишете `Ключ => Стойност`), 
+# забележете, че не можете да имате ключове с еднакви имена (хеш-контекст).
 my %hash = 1 => 2,
            3 => 4;
-my %hash = foo => "bar", # keys get auto-quoted
-            "some other" => "value", # trailing commas are okay
+my %hash = foo => "bar", # ключовете автоматично се ограждат в кавички
+            "some other" => "value", # Запетая в края не е грешка
             ;
-my %hash = <key1 value1 key2 value2>; # you can also create a hash
-                                      # from an even-numbered array
-my %hash = key1 => 'value1', key2 => 'value2'; # same as this
+my %hash = <key1 value1 key2 value2>; # Можете да създадете хеш
+                                      # от списък с четен брой елементи
+my %hash = key1 => 'value1', key2 => 'value2'; # същото като горе
 
-# You can also use the "colon pair" syntax:
-# (especially handy for named parameters that you'll see later)
-my %hash = :w(1), # equivalent to `w => 1`
-           # this is useful for the `True` shortcut:
-           :truey, # equivalent to `:truey(True)`, or `truey => True`
-           # and for the `False` one:
-           :!falsey, # equivalent to `:falsey(False)`, or `falsey => False`
+# Също така може да се ползва синтаксис "с двуеточие":
+# (особено удобен за именувани парметри - малко по-долу)
+my %hash = :w(1), # същото като `w => 1`
+           # това е полезно при използване на т.нар. 
+           # `True`(истинно) кратко записване:
+           :truey, # същото като `:truey(True)`, или `truey => True`
+           # както и за `False`:
+           :!falsey, # същото като `:falsey(False)`, or `falsey => False`
            ;
 
-say %hash{'key1'}; # You can use {} to get the value from a key
-say %hash<key2>;   # If it's a string, you can actually use <>
-                   # (`{key1}` doesn't work, as Perl6 doesn't have barewords)
+say %hash{'key1'}; # Можете да ползвате {}, за да достъпите дадена стойност
+                   # чрез упоменаване на ключ
+say %hash<key2>;   # Ако ключът е низ, можете да ползвате <>
+                   # (`{key1}` не работи, тъйкато в Perl6 няма голи думи)
 
-## * Subs (subroutines, or functions in most other languages).
-sub say-hello { say "Hello, world" }
+## * Subs (подпрограми или функции, както е в повечето други езици).
+sub say-hello { say "Здравей, свят" }
 
-sub say-hello-to(Str $name) { # You can provide the type of an argument
-                              # and it'll be checked at compile-time.
+sub say-hello-to(Str $name) { # Можете да указвате типа на аргумент
+                              # И той ще бъде проверен по време на компилация.
 
     say "Hello, $name !";
 }
 
-## It can also have optional arguments:
-sub with-optional($arg?) { # the "?" marks the argument optional
-  say "I might return `(Any)` (Perl's 'null'-like value) if I don't have
-        an argument passed, or I'll return my argument";
+## Подпрограмата може да има и незадължителни аргументи:
+sub with-optional($arg?) { # "?" обозначава аргумента като незадължителен
+  say "Аз мога да върна `(Any)` (подобна на 'null' стойност в Perl),
+    ако не е подадедн аргумент. Иначе ще върна подадения аргумент.";
   $arg;
 }
-with-optional; # returns Any
-with-optional(); # returns Any
-with-optional(1); # returns 1
+with-optional; # връща Any
+with-optional(); # връща Any
+with-optional(1); # връща 1
 
-## You can also give them a default value when they're not passed:
-sub hello-to($name = "World") {
-  say "Hello, $name !";
+## На аргументите може да се даде и стойност по подразбиране:
+sub hello-to($name = "Свят") {
+  say "Здравей, $name !";
 }
-hello-to; #=> Hello, World !
-hello-to(); #=> Hello, World !
-hello-to('You'); #=> Hello, You !
+hello-to; #=> Здравей, Свят !
+hello-to(); #=> Здравей, Свят !
+hello-to('Пешо'); #=> Здравей, Пешо !
 
-## You can also, by using a syntax akin to the one of hashes (yay unified syntax !),
-##  pass *named* arguments to a `sub`.
-# They're optional, and will default to "Any".
-sub with-named($normal-arg, :$named) {
-  say $normal-arg + $named;
+## Можете също да ползвате синтаксис подобен на този при хешовете
+## (Ура - уеднаквен синтаксис!), за подаване на аргументи на подпрограми.
+# Те са незадължителни и типът им по подразбиране е "Any".
+sub с-именувани($обикновен, :$именуван) {
+  say $обикновен + $именуван;
 }
-with-named(1, named => 6); #=> 7
-# There's one gotcha to be aware of, here:
-# If you quote your key, Perl 6 won't be able to see it at compile time,
-#  and you'll have a single Pair object as a positional parameter,
-#  which means this fails:
-with-named(1, 'named' => 6);
+с-именувани(1, named => 6); #=> 7
+# Тук трябва да знаете следното:
+# Ако оградите ключа с кавички, Perl 6 не го вижда и го третира като
+# позиционен аргумент. Следното дава грешка при изпълнение:
+с-именувани(1, 'named' => 6);
+#=> Too many positionals passed; expected 1 argument but got 2
+с-именовани(2, :named(5)); #=> 7
 
-with-named(2, :named(5)); #=> 7
-
-# To make a named argument mandatory, you can use `?`'s inverse, `!`
+# За да направите именован аргумент задължителен, използвайте `!`,
+# което е обратното на `?`.
 sub with-mandatory-named(:$str!)  {
   say "$str !";
 }
