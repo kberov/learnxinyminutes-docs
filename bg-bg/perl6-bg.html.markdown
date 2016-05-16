@@ -146,19 +146,21 @@ sub с-именувани($обикновен, :$именуван) {
 sub with-mandatory-named(:$str!)  {
   say "$str !";
 }
-with-mandatory-named(str => "My String"); #=> My String !
-with-mandatory-named; # run time error: "Required named parameter not passed"
-with-mandatory-named(3); # run time error: "Too many positional parameters passed"
+with-mandatory-named(str => "Моят низ!"); #=> Моят низ!
+with-mandatory-named; 
+# грешка при изпълнение: "Required named parameter not passed"
+with-mandatory-named(3); 
+# грешка при изпълнение: "Too many positional parameters passed"
 
-## If a sub takes a named boolean argument ...
+## Ако подпрограмата приема именуван аргу,емт с булева стойност ...
 sub takes-a-bool($name, :$bool) {
   say "$name takes $bool";
 }
-# ... you can use the same "short boolean" hash syntax:
-takes-a-bool('config', :bool); # config takes True
-takes-a-bool('config', :!bool); # config takes False
+# ... можете да ползвате същия кратък синтаксис като при хешовете:
+takes-a-bool('config', :bool); # config приема True
+takes-a-bool('config', :!bool); # config приема False
 
-## You can also provide your named arguments with defaults:
+## можете също да предоставите подразбиращи се стойности за аргументите:
 sub named-def(:$def = 5) {
   say $def;
 }
